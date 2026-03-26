@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Underwriter Pro v3.2</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap');
+:root{
+  --bg:#f8fafc;--surface:#fff;--surface2:#f1f5f9;
+  --border:#e2e8f0;--border2:#cbd5e1;
+  --text:#0f172a;--text2:#475569;--text3:#94a3b8;
+  --blue:#2563eb;--blue-lt:#eff6ff;--blue-md:#bfdbfe;
+  --green:#059669;--green-lt:#ecfdf5;
+  --red:#e11d48;--red-lt:#fff1f2;
+  --amber:#d97706;--amber-lt:#fffbeb;
+  --purple:#7c3aed;--purple-lt:#f5f3ff;
+  --font:'DM Sans',system-ui,sans-serif;
+  --mono:'DM Mono',monospace;
+  --r:10px;--r-lg:14px;
+  --sh:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --sh-md:0 4px 14px rgba(0,0,0,.09);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:14px}
+body{font-family:var(--font);background:var(--bg);color:var(--text);direction:rtl;display:flex;height:100vh;overflow:hidden}
+input,select{font-family:var(--font)}
+input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+input[type=number]{-moz-appearance:textfield}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+
+/* ── SIDEBAR ── */
+.sidebar{width:290px;min-width:290px;height:100vh;background:var(--surface);border-left:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column;flex-shrink:0}
+.sb-logo{padding:15px 18px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0}
+.sb-logo .lm{width:30px;height:30px;background:var(--blue);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-logo .lt{font-size:13px;font-weight:700}
+.sb-logo .ls{font-size:10px;color:var(--text3)}
+.sb-body{padding:14px;display:flex;flex-direction:column;gap:12px}
+.sb-sec{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px;box-shadow:var(--sh)}
+.sb-sec-title{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;display:flex;align-items:center;gap:4px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}
+.field{display:flex;flex-direction:column;gap:3px}
+.field label{font-size:10px;font-weight:500;color:var(--text2)}
+.field label.blue{color:var(--blue)}
+.field label.green{color:var(--green)}
+.field label.orange{color:var(--amber)}
+.inp{width:100%;padding:6px 8px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;color:var(--text);background:var(--surface);outline:none;transition:.15s;font-family:var(--mono)}
+.inp:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.inp.blue-inp{border-color:var(--blue-md);background:var(--blue-lt)}
+.inp.green-inp{border-color:#86efac;background:var(--green-lt)}
+.inp.orange-inp{border-color:#fcd34d;background:var(--amber-lt)}
+.inp.full{width:100%}
+/* rent toggle */
+.rent-toggle{display:flex;border-radius:8px;overflow:hidden;border:1.5px solid var(--border);margin-bottom:8px}
+.rent-btn{flex:1;padding:7px 4px;font-size:11px;font-weight:600;text-align:center;cursor:pointer;border:none;background:var(--surface2);color:var(--text3);transition:.15s;font-family:var(--font)}
+.rent-btn.active-market{background:var(--surface2);color:var(--text);border-bottom:2.5px solid var(--text2)}
+.rent-btn.active-s8{background:var(--green-lt);color:var(--green);border-bottom:2.5px solid var(--green)}
+.rent-lbl{font-size:10px;font-weight:700;text-align:center;margin-bottom:7px}
+/* shpitzer box */
+.shp-box{background:var(--blue-lt);border:1px solid var(--blue-md);border-radius:8px;padding:8px 10px;margin-top:8px}
+.shp-row{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px}
+.shp-label{color:var(--blue);font-weight:500}
+.shp-val{font-family:var(--mono);font-weight:700;color:var(--blue)}
+
+/* ── MAIN ── */
+.main{flex:1;height:100vh;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.dash-hdr{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 20px;display:flex;justify-content:space-between;align-items:center;box-shadow:var(--sh);flex-wrap:wrap;gap:12px}
+.dash-hdr h1{font-size:20px;font-weight:800;letter-spacing:-.02em}
+.dash-hdr .sub{font-size:11px;color:var(--text3);margin-top:2px}
+.hdr-kpis{display:flex;gap:20px;align-items:center}
+.hdr-kpi{text-align:center}
+.hdr-kpi .kv{font-size:20px;font-weight:800;font-family:var(--mono);line-height:1}
+.hdr-kpi .kl{font-size:10px;color:var(--text3);letter-spacing:.06em;margin-top:2px;font-weight:600;text-transform:uppercase}
+.hdr-divider{width:1px;height:36px;background:var(--border)}
+.badge{display:inline-flex;align-items:center;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700}
+.maturity-bar{background:var(--blue-lt);border:1px solid var(--blue-md);border-radius:var(--r);padding:8px 12px;display:flex;align-items:center;gap:10px;margin-top:8px}
+.mat-label{font-size:10px;color:var(--blue);font-weight:600}
+.mat-val{font-size:13px;font-weight:800;font-family:var(--mono);color:var(--blue)}
+.mat-prog{flex:1;height:6px;background:var(--blue-md);border-radius:3px;overflow:hidden}
+.mat-prog-inner{height:100%;background:var(--blue);border-radius:3px}
+/* metric cards */
+.metrics-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.metric-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:14px 16px;box-shadow:var(--sh);transition:.2s transform,.2s box-shadow}
+.metric-card:hover{transform:translateY(-2px);box-shadow:var(--sh-md)}
+.mc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.mc-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.mc-label{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3)}
+.mc-val{font-size:20px;font-weight:800;font-family:var(--mono);line-height:1;margin-bottom:3px}
+.mc-sub{font-size:10px;color:var(--text3)}
+/* year cards */
+.year-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.year-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:16px;box-shadow:var(--sh)}
+.yc-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.yc-year{font-size:13px;font-weight:700}
+.yc-roe{font-size:11px;font-weight:700;padding:3px 8px;border-radius:12px}
+.yc-metrics{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.yc-item{background:var(--surface2);border-radius:8px;padding:8px 10px}
+.yc-item-lbl{font-size:9px;color:var(--text3);font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:3px}
+.yc-item-val{font-size:14px;font-weight:800;font-family:var(--mono)}
+.yc-item-sub{font-size:10px;color:var(--text3);font-family:var(--mono)}
+/* ROE */
+.roe-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:18px;box-shadow:var(--sh)}
+.roe-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;flex-wrap:wrap;gap:10px}
+.roe-title{font-size:14px;font-weight:700}
+.roe-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.roe-big{font-size:32px;font-weight:800;font-family:var(--mono);color:var(--blue);line-height:1}
+.roe-ils{font-size:12px;color:var(--text3)}
+.roe-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.roe-item{background:var(--surface2);border-radius:var(--r);padding:10px}
+.ri-lbl{font-size:10px;color:var(--text3);margin-bottom:4px}
+.ri-val{font-size:17px;font-weight:800;font-family:var(--mono)}
+.ri-pct{font-size:10px;color:var(--text3)}
+.roe-formula{background:var(--blue-lt);border:1px solid var(--blue-md);border-radius:var(--r);padding:9px 12px;font-size:11px;color:var(--blue);font-family:var(--mono);line-height:1.7}
+/* charts */
+.charts-2col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.chart-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:16px;box-shadow:var(--sh)}
+.chart-card .ct{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);text-align:center;margin-bottom:10px}
+.chart-wrap{position:relative;cursor:crosshair}
+canvas{display:block;width:100%!important}
+/* ── REDESIGNED CF/ROE chart panel ── */
+.dual-chart-panel{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:0;box-shadow:var(--sh);overflow:hidden}
+.dcp-header{padding:14px 18px 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.dcp-title{font-size:13px;font-weight:700;color:var(--text)}
+.dcp-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:12px}
+.dcp-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-top:12px}
+.dcp-stat{padding:10px 14px;border-left:1px solid var(--border);text-align:center}
+.dcp-stat:last-child{border-left:none}
+.dcp-stat-lbl{font-size:9px;color:var(--text3);font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px}
+.dcp-stat-val{font-size:16px;font-weight:800;font-family:var(--mono)}
+.dcp-body{padding:14px 16px 14px}
+.dcp-charts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+/* tooltip */
+.chart-tooltip{position:fixed;pointer-events:none;z-index:9999;background:#1e293b;color:#f8fafc;border-radius:10px;padding:10px 14px;font-family:var(--font);font-size:12px;box-shadow:0 8px 24px rgba(0,0,0,.25);min-width:180px;opacity:0;transition:opacity .1s;border:1px solid rgba(255,255,255,.08)}
+.chart-tooltip.visible{opacity:1}
+.tt-title{font-size:11px;font-weight:600;color:#94a3b8;margin-bottom:7px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.1)}
+.tt-row{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:4px}
+.tt-row:last-child{margin-bottom:0}
+.tt-label{font-size:11px;color:#cbd5e1;display:flex;align-items:center;gap:5px}
+.tt-dot{width:7px;height:7px;border-radius:2px;flex-shrink:0}
+.tt-val{font-size:12px;font-weight:700;font-family:var(--mono)}
+.crosshair{position:absolute;top:0;width:1px;background:rgba(37,99,235,.2);pointer-events:none;display:none}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px;justify-content:center}
+.legend-item{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text2)}
+.ldot{width:8px;height:8px;border-radius:2px}
+.micro-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.micro-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:14px;box-shadow:var(--sh);display:flex;flex-direction:column;align-items:center;text-align:center}
+.micro-icon{font-size:22px;margin-bottom:6px}
+.micro-title{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:4px}
+.micro-val{font-size:20px;font-weight:800;font-family:var(--mono)}
+.risk-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:18px;box-shadow:var(--sh)}
+.risk-title{font-size:14px;font-weight:700;margin-bottom:12px}
+.risk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.risk-item{border-radius:var(--r);padding:11px 13px;display:flex;align-items:flex-start;gap:9px;border:1.5px solid transparent}
+.risk-item.pass{background:#f0fdf4;border-color:#86efac}
+.risk-item.fail{background:#fff1f2;border-color:#fca5a5}
+.risk-item.warn{background:#fffbeb;border-color:#fcd34d}
+.ri-icon{font-size:15px;flex-shrink:0;margin-top:1px}
+.ri-title{font-size:11px;font-weight:700}
+.ri-desc{font-size:10px;color:var(--text2);margin-top:2px;line-height:1.4}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.fu{animation:fadeUp .35s ease both}
+.fu2{animation-delay:.06s}.fu3{animation-delay:.12s}.fu4{animation-delay:.18s}.fu5{animation-delay:.24s}.fu6{animation-delay:.30s}
+@media(max-width:1100px){.metrics-row{grid-template-columns:1fr 1fr}.charts-2col{grid-template-columns:1fr}.dcp-charts{grid-template-columns:1fr}.micro-row{grid-template-columns:1fr 1fr}.risk-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:780px){.sidebar{display:none}.year-cards{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="chart-tooltip" id="tt"></div>
+
+<!-- ══ SIDEBAR ══ -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="lm"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+    <div><div class="lt">Underwriter Pro</div><div class="ls">Sub-To Analysis Engine v3.2</div></div>
+  </div>
+  <div class="sb-body">
+    <div class="sb-sec">
+      <div class="sb-sec-title">🏠 נכס ושווי</div>
+      <div class="field" style="margin-bottom:8px"><label>כתובת הנכס</label><input class="inp full" id="f-address" type="text" value="Main St, Texas" oninput="render()"/></div>
+      <div class="grid2">
+        <div class="field"><label>שנת בנייה</label><input class="inp" id="f-year-built" type="number" value="1998" oninput="render()"/></div>
+        <div class="field"><label>מחיר רכישה $</label><input class="inp" id="f-purchase" type="number" value="320000" oninput="render()"/></div>
+      </div>
+      <div class="grid2" style="margin-top:7px">
+        <div class="field"><label>שווי שוק $</label><input class="inp" id="f-market" type="number" value="365000" oninput="render()"/></div>
+        <div class="field"><label class="blue">Entry Fee $</label><input class="inp blue-inp" id="f-entry" type="number" value="19000" oninput="render()"/></div>
+      </div>
+    </div>
+    <div class="sb-sec">
+      <div class="sb-sec-title">📋 מימון — לוח שפיצר</div>
+      <div class="grid2">
+        <div class="field"><label>יתרת חוב $</label><input class="inp" id="f-loan-bal" type="number" value="280000" oninput="render()"/></div>
+        <div class="field"><label class="blue">ריבית שנתית %</label><input class="inp blue-inp" id="f-rate" type="number" value="5.875" step="0.01" oninput="render()"/></div>
+      </div>
+      <div class="field" style="margin-top:7px"><label>מועד פירעון</label><input class="inp full" id="f-maturity" type="date" value="2053-10-01" oninput="render()"/></div>
+      <div class="shp-box">
+        <div class="shp-row"><span class="shp-label">תשלום חודשי (P+I)</span><span class="shp-val" id="shp-payment">—</span></div>
+        <div class="shp-row"><span class="shp-label">ריבית חודשית שנה 1</span><span class="shp-val" id="shp-int1">—</span></div>
+        <div class="shp-row"><span class="shp-label">קרן חודשית שנה 1</span><span class="shp-val" id="shp-prin1">—</span></div>
+        <div class="shp-row"><span class="shp-label">סה"כ ריבית חיים</span><span class="shp-val" id="shp-total-int">—</span></div>
+      </div>
+    </div>
+    <div class="sb-sec">
+      <div class="sb-sec-title">💸 הוצאות חודשיות</div>
+      <div class="grid2">
+        <div class="field"><label>ארנונה $</label><input class="inp" id="f-taxes" type="number" value="450" oninput="render()"/></div>
+        <div class="field"><label>ביטוח $</label><input class="inp" id="f-insurance" type="number" value="120" oninput="render()"/></div>
+      </div>
+      <div class="grid3" style="margin-top:7px">
+        <div class="field"><label>HOA $</label><input class="inp" id="f-hoa" type="number" value="50" oninput="render()"/></div>
+        <div class="field"><label class="orange">Capex $</label><input class="inp orange-inp" id="f-capex" type="number" value="150" oninput="render()"/></div>
+        <div class="field"><label class="orange">Other $</label><input class="inp orange-inp" id="f-other" type="number" value="100" oninput="render()"/></div>
+      </div>
+    </div>
+    <div class="sb-sec">
+      <div class="sb-sec-title">🏷️ הכנסות שכירות</div>
+      <div class="rent-toggle">
+        <button class="rent-btn" id="btn-market" onclick="setRentMode('market')">🏠 שכירות שוק</button>
+        <button class="rent-btn active-s8" id="btn-s8" onclick="setRentMode('s8')">📋 Section 8</button>
+      </div>
+      <div class="rent-lbl" id="rent-active-label"><span style="background:var(--green-lt);color:var(--green);padding:2px 10px;border-radius:6px;">✓ חישוב לפי Section 8</span></div>
+      <div class="grid2">
+        <div class="field"><label>שוק (Market) $</label><input class="inp" id="f-rent-market" type="number" value="2400" oninput="render()"/></div>
+        <div class="field"><label class="green">Section 8 $</label><input class="inp green-inp" id="f-rent-s8" type="number" value="2750" oninput="render()"/></div>
+      </div>
+      <div class="grid2" style="margin-top:7px">
+        <div class="field"><label>DOM (ימי שוק)</label><input class="inp" id="f-dom" type="number" value="14" oninput="render()"/></div>
+        <div class="field"><label class="green">עליית שכירות %/שנה</label><input class="inp green-inp" id="f-rent-growth" type="number" value="2" step="0.5" oninput="render()"/></div>
+      </div>
+    </div>
+    <div class="sb-sec">
+      <div class="sb-sec-title">🌍 Macro &amp; Currency</div>
+      <div class="grid2">
+        <div class="field"><label>שער ILS ₪</label><input class="inp" id="f-ils" type="number" value="3.7" step="0.01" oninput="render()"/></div>
+        <div class="field"><label>עליית ערך %/שנה</label><input class="inp" id="f-appr" type="number" value="3" step="0.1" oninput="render()"/></div>
+      </div>
+      <div class="field" style="margin-top:7px">
+        <label>S&amp;P 500 תשואה %/שנה</label>
+        <input class="inp" id="f-snp" type="number" value="10" step="0.5" oninput="render()"/>
+      </div>
+    </div>
+    <div class="sb-sec">
+      <div class="sb-sec-title">📊 Micro Data</div>
+      <div class="grid2">
+        <div class="field"><label>בתי-ספר</label><input class="inp" id="mi-school" type="text" value="8/10" oninput="render()"/></div>
+        <div class="field"><label>פשיעה</label><input class="inp" id="mi-crime" type="text" value="A-" oninput="render()"/></div>
+      </div>
+      <div class="grid2" style="margin-top:7px">
+        <div class="field"><label>צמיחה</label><input class="inp" id="mi-growth" type="text" value="+150%" oninput="render()"/></div>
+        <div class="field"><label>אבטלה</label><input class="inp" id="mi-jobs" type="text" value="3.4%" oninput="render()"/></div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ══ MAIN ══ -->
+<main class="main">
+  <div id="dash-hdr" class="fu"></div>
+  <div id="metrics" class="metrics-row fu fu2"></div>
+  <div id="year-cards" class="year-cards fu fu3"></div>
+  <div id="roe-card" class="roe-card fu fu4"></div>
+  <!-- Charts row 1: equity + S&P -->
+  <div class="charts-2col fu fu5">
+    <div class="chart-card">
+      <div class="ct">📈 שווי נכס מול יתרת חוב — שפיצר</div>
+      <div class="chart-wrap" id="wrap-area"><canvas id="chart-area" height="210"></canvas><div class="crosshair" id="cross-area"></div></div>
+      <div class="legend" id="leg-area"></div>
+    </div>
+    <div class="chart-card">
+      <div class="ct">💹 Sub-To vs S&P 500 — על ה-Entry Fee</div>
+      <div class="chart-wrap" id="wrap-compare"><canvas id="chart-compare" height="210"></canvas><div class="crosshair" id="cross-compare"></div></div>
+      <div class="legend" id="leg-compare"></div>
+    </div>
+  </div>
+  <!-- Charts row 2: CF + ROE redesigned panel -->
+  <div class="dual-chart-panel fu fu5" id="dcp-panel"></div>
+  <!-- Amortization -->
+  <div class="chart-card fu fu5">
+    <div class="ct">🔢 לוח שפיצר שנתי — קרן וריבית לאורך זמן</div>
+    <div class="chart-wrap" id="wrap-amort"><canvas id="chart-amort" height="190"></canvas><div class="crosshair" id="cross-amort"></div></div>
+    <div class="legend">
+      <div class="legend-item"><div class="ldot" style="background:#2563eb"></div>קרן שנתית</div>
+      <div class="legend-item"><div class="ldot" style="background:#f43f5e"></div>ריבית שנתית</div>
+    </div>
+  </div>
+  <div id="micro-row" class="micro-row fu fu5"></div>
+  <div id="risk-section" class="risk-card fu fu6"></div>
+</main>
+
+<script>
+/* ════ STATE ════ */
+var rentMode='s8';
+function setRentMode(m){
+  rentMode=m;
+  var bm=$('btn-market'), bs=$('btn-s8'), lbl=$('rent-active-label');
+  bm.className='rent-btn'+(m==='market'?' active-market':'');
+  bs.className='rent-btn'+(m==='s8'?' active-s8':'');
+  lbl.innerHTML=m==='s8'
+    ?'<span style="background:var(--green-lt);color:var(--green);padding:2px 10px;border-radius:6px;">✓ חישוב לפי Section 8</span>'
+    :'<span style="background:var(--surface2);color:var(--text2);padding:2px 10px;border-radius:6px;">✓ חישוב לפי שכירות שוק</span>';
+  render();
+}
+
+/* ════ UTILS ════ */
+var $=function(id){return document.getElementById(id);};
+function gn(id){var v=parseFloat($(id)&&$(id).value);return isNaN(v)?0:v;}
+function gs(id){return $(id)?$(id).value:'';}
+function fmt(n,d){d=d||0;return Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});}
+function fmtK(n){
+  var a=Math.abs(n);
+  var sign=n<0?'-':'';
+  if(a>=1e6)return sign+'$'+(a/1e6).toFixed(2)+'M';
+  if(a>=1e3)return sign+'$'+(a/1e3).toFixed(0)+'k';
+  return sign+'$'+fmt(a);
+}
+function fmtMo(n){/* format small monthly values */
+  var a=Math.abs(n);
+  return (n<0?'-':'')+'$'+fmt(Math.round(a));
+}
+function fmtILS(usd,ils){var s=usd*ils,a=Math.abs(s);if(a>=1e6)return(s>=0?'':'−')+'₪'+(a/1e6).toFixed(2)+'M';return(s>=0?'':'−')+'₪'+fmt(Math.round(a));}
+function hex2rgba(h,a){var r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);return 'rgba('+r+','+g+','+b+','+a+')';}
+function daysUntil(ds){var d=new Date(ds),n=new Date();return Math.max(0,Math.round((d-n)/86400000));}
+function niceMax(v){/* round up to nice number */
+  if(v===0) return 10;
+  var mag=Math.pow(10,Math.floor(Math.log10(Math.abs(v))));
+  return Math.ceil(v/mag)*mag;
+}
+function niceMin(v){
+  if(v>=0) return 0;
+  var mag=Math.pow(10,Math.floor(Math.log10(Math.abs(v))));
+  return Math.floor(v/mag)*mag;
+}
+
+/* ════ SHPITZER ════ */
+function calcShpitzer(balance,annualRate,matDateStr){
+  var results=[];
+  if(!balance||!annualRate||!matDateStr)return results;
+  var r=annualRate/100/12;
+  var totalMonths=Math.round(daysUntil(matDateStr)/30.4375);
+  if(totalMonths<=0)totalMonths=360;
+  var M=r===0?balance/totalMonths:balance*(r*Math.pow(1+r,totalMonths))/(Math.pow(1+r,totalMonths)-1);
+  var bal=balance,annP=0,annI=0;
+  for(var m=1;m<=Math.min(totalMonths,15*12);m++){
+    var ip=bal*r,pp=Math.min(M-ip,bal);
+    bal-=pp;annP+=pp;annI+=ip;
+    if(m%12===0){
+      results.push({year:m/12,balance:Math.max(0,Math.round(bal)),annualPrin:Math.round(annP),annualInt:Math.round(annI),monthlyPayment:Math.round(M)});
+      annP=0;annI=0;
+    }
+  }
+  return results;
+}
+
+/* ════ PROJECTION ════ */
+function calcData(){
+  var purchase  =gn('f-purchase');
+  var market    =gn('f-market');
+  var entry     =gn('f-entry');
+  var loanBal   =gn('f-loan-bal');
+  var rate      =gn('f-rate');
+  var matDate   =gs('f-maturity');
+  var taxes     =gn('f-taxes');
+  var insurance =gn('f-insurance');
+  var hoa       =gn('f-hoa');
+  var capex     =gn('f-capex');
+  var other     =gn('f-other');
+  var rentMarket=gn('f-rent-market');
+  var rentS8    =gn('f-rent-s8');
+  var rentGrowth=gn('f-rent-growth')/100;
+  var ils       =gn('f-ils');
+  var appr      =gn('f-appr')/100;
+  var snpR      =gn('f-snp')/100;
+  var baseRent  =rentMode==='s8'?rentS8:rentMarket;
+
+  var shp=calcShpitzer(loanBal,rate,matDate);
+
+  /* sidebar shpitzer display */
+  if(shp.length>0){
+    var mp=shp[0].monthlyPayment,int1=shp[0].annualInt/12,pr1=mp-int1;
+    $('shp-payment').textContent='$'+fmt(Math.round(mp));
+    $('shp-int1').textContent='$'+fmt(Math.round(int1));
+    $('shp-prin1').textContent='$'+fmt(Math.round(pr1));
+    var ti=0;shp.forEach(function(s){ti+=s.annualInt;});
+    $('shp-total-int').textContent='$'+fmt(Math.round(ti));
+  }
+
+  var rows=[];
+  var val=market||purchase;
+  var curRent=baseRent;
+  var cumCF=0;
+
+  /* ── S&P: entry fee invested at year 0, compounds each year ──
+     snpVal[yr] = entry * (1+snpR)^yr
+     gain = snpVal - entry  (pure profit above initial stake) */
+
+  for(var yr=0;yr<=15;yr++){
+    var shpYr   =shp[yr-1]||null;
+    var annPrin =shpYr?shpYr.annualPrin:0;
+    var annInt  =shpYr?shpYr.annualInt:0;
+    var monthlyPI=shpYr?shpYr.monthlyPayment:0;
+    var bal     =yr===0?loanBal:(shp[yr-1]?shp[yr-1].balance:Math.max(0,loanBal-annPrin));
+
+    var piti    =monthlyPI+taxes+insurance+hoa+capex+other;
+    var monthCF =curRent-piti;
+    var annCF   =monthCF*12;
+    var appGain =val*appr;
+    /* ── CORRECT EQUITY: property value MINUS remaining loan balance ──
+       Entry Fee is the cash paid to buy in — it is NOT deducted from equity
+       Equity = Current Value − Loan Balance */
+    var equity  =val-bal;
+    /* ── S&P gain on entry fee ── */
+    var snpGain =entry*(Math.pow(1+snpR,yr)-1);  // pure gain, starts at 0
+    var roe     =yr===0?0:((annCF+annPrin+appGain)/(entry||1))*100;
+
+    rows.push({
+      year:yr, balance:Math.round(bal), value:Math.round(val),
+      equity:Math.round(equity), cumCF:Math.round(cumCF),
+      snpGain:Math.round(snpGain),
+      annCF:Math.round(annCF), annPrin:Math.round(annPrin),
+      annInt:Math.round(annInt), appGain:Math.round(appGain),
+      roe:parseFloat(roe.toFixed(2)),
+      monthCF:Math.round(monthCF), piti:Math.round(piti),
+      monthlyPI:Math.round(monthlyPI),
+      curRent:Math.round(curRent)
+    });
+
+    if(yr>0){val*=(1+appr);cumCF+=annCF;}
+    curRent*=(1+rentGrowth);
+    if(yr===0)cumCF=0;
+  }
+
+  return{rows,entry,ils,shp,purchase,market:market||purchase,loanBal,
+    annCF:rows[1]?rows[1].annCF:0,
+    annPrin:rows[1]?rows[1].annPrin:0,
+    monthCF:rows[1]?rows[1].monthCF:0,
+    piti:rows[1]?rows[1].piti:0,
+    rentGrowth,baseRent
+  };
+}
+
+/* ══════════════════════════
+   CANVAS ENGINE
+══════════════════════════ */
+function setupCanvas(id,h){
+  var c=$(id);if(!c)return null;
+  var dpr=window.devicePixelRatio||1;
+  var W=c.parentElement.clientWidth-32;
+  c.style.width=W+'px';c.style.height=h+'px';
+  c.width=W*dpr;c.height=h*dpr;
+  var ctx=c.getContext('2d');ctx.scale(dpr,dpr);
+  return{ctx,W,H:h};
+}
+function drawGrid(ctx,pad,iw,ih,maxV,minV){
+  var range=maxV-minV||1;
+  for(var g=0;g<=4;g++){
+    var gy=pad.top+ih-(g/4)*ih;
+    ctx.strokeStyle='#e2e8f0';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.left,gy);ctx.lineTo(pad.left+iw,gy);ctx.stroke();
+    var gv=minV+(g/4)*range;
+    var lbl;
+    if(Math.abs(gv)>=1000) lbl=(gv<0?'-':'')+' $'+(Math.abs(gv)/1000).toFixed(0)+'k';
+    else lbl=(gv<0?'-$':'$')+Math.abs(Math.round(gv));
+    ctx.fillStyle='#94a3b8';ctx.font='9px DM Mono,monospace';ctx.textAlign='right';
+    ctx.fillText(lbl,pad.left-4,gy+4);
+  }
+}
+function drawXLabels(ctx,pad,iw,H,labels){
+  ctx.fillStyle='#94a3b8';ctx.font='9px DM Mono,monospace';ctx.textAlign='center';
+  labels.forEach(function(l,i){
+    if(labels.length<=16||i%3===0)
+      ctx.fillText(l,pad.left+(i/(labels.length-1||1))*iw,H-6);
+  });
+}
+function drawLineSeries(ctx,pad,iw,ih,data,maxV,minV,series){
+  var n=data.length;
+  var range=maxV-minV||1;
+  function xp(i){return pad.left+(i/(n-1||1))*iw;}
+  function yp(v){return pad.top+ih-((v-minV)/range)*ih;}
+  /* zero line */
+  if(minV<0&&maxV>0){
+    var zy=yp(0);
+    ctx.strokeStyle='rgba(148,163,184,.4)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+    ctx.beginPath();ctx.moveTo(pad.left,zy);ctx.lineTo(pad.left+iw,zy);ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  series.forEach(function(s){
+    var grad=ctx.createLinearGradient(0,pad.top,0,pad.top+ih);
+    grad.addColorStop(0,hex2rgba(s.color,.15));
+    grad.addColorStop(1,hex2rgba(s.color,0));
+    ctx.beginPath();
+    data.forEach(function(d,i){i===0?ctx.moveTo(xp(i),yp(d[s.key])):ctx.lineTo(xp(i),yp(d[s.key]));});
+    ctx.save();
+    ctx.lineTo(xp(n-1),yp(Math.max(minV,0)));
+    ctx.lineTo(xp(0),yp(Math.max(minV,0)));
+    ctx.closePath();ctx.fillStyle=grad;ctx.fill();ctx.restore();
+    ctx.beginPath();
+    data.forEach(function(d,i){i===0?ctx.moveTo(xp(i),yp(d[s.key])):ctx.lineTo(xp(i),yp(d[s.key]));});
+    ctx.strokeStyle=s.color;ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.stroke();
+    [5,10,15].forEach(function(yr){
+      if(yr<data.length){
+        ctx.beginPath();ctx.arc(xp(yr),yp(data[yr][s.key]),4,0,Math.PI*2);
+        ctx.fillStyle=s.color;ctx.fill();
+        ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+      }
+    });
+  });
+}
+function registerHover(canvasId,wrapId,crossId,pad,data,series){
+  var c=$(canvasId);if(!c)return;
+  function onMove(ex,ey){
+    var rect=c.getBoundingClientRect();
+    var mx=ex-rect.left;
+    var iw=rect.width-pad.left-pad.right;
+    var ih=rect.height-pad.top-pad.bottom;
+    if(mx<pad.left||mx>pad.left+iw){hideTT();return;}
+    var n=data.length;
+    var idx=Math.round(((mx-pad.left)/iw)*(n-1));
+    idx=Math.max(0,Math.min(n-1,idx));
+    var d=data[idx];
+    var cr=$(crossId);
+    if(cr){cr.style.display='block';cr.style.left=(pad.left+(idx/(n-1||1))*iw)+'px';cr.style.top=pad.top+'px';cr.style.height=ih+'px';}
+    var title=d.year!==undefined?'שנה '+d.year:(d.label||String(idx));
+    var html='<div class="tt-title">'+title+'</div>';
+    series.forEach(function(s){
+      var v=d[s.key];
+      var vStr=s.pct?v.toFixed(1)+'%':s.mo?fmtMo(v):fmtK(v);
+      html+='<div class="tt-row"><span class="tt-label"><span class="tt-dot" style="background:'+s.color+'"></span>'+s.label+'</span><span class="tt-val" style="color:'+s.color+';">'+vStr+'</span></div>';
+    });
+    var tt=$('tt');tt.innerHTML=html;tt.classList.add('visible');
+    var tl=ex+14,tt2=ey-20;
+    if(tl+190>window.innerWidth)tl=ex-204;
+    if(tt2+110>window.innerHeight)tt2=window.innerHeight-120;
+    tt.style.left=tl+'px';tt.style.top=tt2+'px';
+  }
+  function onLeave(){hideTT();var cr=$(crossId);if(cr)cr.style.display='none';}
+  c.onmousemove=function(e){onMove(e.clientX,e.clientY);};
+  c.onmouseleave=onLeave;
+}
+function hideTT(){var tt=$('tt');if(tt)tt.classList.remove('visible');}
+
+/* generic line chart */
+function drawLineChart(id,wrapId,crossId,data,series,h){
+  h=h||210;
+  var s=setupCanvas(id,h);if(!s)return;
+  var ctx=s.ctx,W=s.W,H=s.H;
+  var pad={top:14,right:12,bottom:22,left:58};
+  var iw=W-pad.left-pad.right,ih=H-pad.top-pad.bottom;
+  var maxV=0,minV=0;
+  data.forEach(function(d){series.forEach(function(sr){maxV=Math.max(maxV,d[sr.key]);minV=Math.min(minV,d[sr.key]);});});
+  maxV=niceMax(maxV*1.05);
+  minV=niceMin(minV*1.05);
+  drawGrid(ctx,pad,iw,ih,maxV,minV);
+  drawXLabels(ctx,pad,iw,H,data.map(function(d){return d.year!==undefined?d.year:(d.label||'');}));
+  drawLineSeries(ctx,pad,iw,ih,data,maxV,minV,series);
+  registerHover(id,wrapId,crossId,pad,data,series);
+}
+
+/* amortization stacked bar */
+function drawAmort(id,wrapId,crossId,data){
+  var s=setupCanvas(id,190);if(!s)return;
+  var ctx=s.ctx,W=s.W,H=s.H;
+  var pad={top:14,right:12,bottom:22,left:58};
+  var iw=W-pad.left-pad.right,ih=H-pad.top-pad.bottom;
+  var maxV=0;data.forEach(function(d){maxV=Math.max(maxV,d.annualPrin+d.annualInt);});
+  maxV=niceMax(maxV*1.05)||1;
+  for(var g=0;g<=4;g++){
+    var gy=pad.top+ih-(g/4)*ih;
+    ctx.strokeStyle='#e2e8f0';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.left,gy);ctx.lineTo(pad.left+iw,gy);ctx.stroke();
+    ctx.fillStyle='#94a3b8';ctx.font='9px DM Mono,monospace';ctx.textAlign='right';
+    ctx.fillText('$'+(Math.round((g/4)*maxV/1000))+'k',pad.left-4,gy+4);
+  }
+  var n=data.length;
+  var bw=Math.max(6,(iw/n)*0.58);
+  data.forEach(function(d,i){
+    var cx=pad.left+(n>1?(i/(n-1))*iw:iw/2),x=cx-bw/2;
+    var ih2=(d.annualInt/maxV)*ih,iy=pad.top+ih-ih2;
+    rr(ctx,x,iy,bw,ih2,[0,0,0,0],'#f43f5e');
+    var ph2=(d.annualPrin/maxV)*ih,py=iy-ph2;
+    rr(ctx,x,py,bw,ph2,[3,3,0,0],'#2563eb');
+    ctx.fillStyle='#94a3b8';ctx.font='9px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText('Y'+d.year,cx,H-6);
+  });
+  registerHover(id,wrapId,crossId,pad,data,[
+    {key:'annualPrin',label:'קרן שנתית',color:'#2563eb'},
+    {key:'annualInt', label:'ריבית שנתית',color:'#f43f5e'},
+    {key:'balance',   label:'יתרת חוב',color:'#94a3b8'}
+  ]);
+}
+function rr(ctx,x,y,w,h2,radii,fill){
+  if(h2<=0||w<=0)return;
+  var tl=radii[0],tr=radii[1];
+  ctx.beginPath();
+  ctx.moveTo(x+tl,y);ctx.lineTo(x+w-tr,y);ctx.quadraticCurveTo(x+w,y,x+w,y+tr);
+  ctx.lineTo(x+w,y+h2);ctx.lineTo(x,y+h2);ctx.lineTo(x,y+tl);
+  ctx.quadraticCurveTo(x,y,x+tl,y);ctx.closePath();
+  ctx.fillStyle=fill;ctx.fill();
+}
+
+/* ════ RENDER ════ */
+function render(){
+  var proj=calcData();
+  var rows=proj.rows,entry=proj.entry,ils=proj.ils;
+  var annCF=proj.annCF,annPrin=proj.annPrin;
+  var monthCF=proj.monthCF,piti=proj.piti;
+  var r1=rows[1]||rows[0];
+  var rentGrowth=proj.rentGrowth;
+  var rentLabel=rentMode==='s8'?'Section 8':'שוק';
+
+  /* HEADER */
+  var addr=gs('f-address')||'—';
+  var yBuilt=gs('f-year-built')||'—';
+  var mktVal=gn('f-market')||gn('f-purchase')||1;
+  var ltvPct=((gn('f-loan-bal')/mktVal)*100).toFixed(1);
+  var ltvNum=parseFloat(ltvPct);
+  var ltvCol=ltvNum>90?'#e11d48':ltvNum>80?'#d97706':'#059669';
+  var ltvBg=ltvNum>90?'#fff1f2':ltvNum>80?'#fffbeb':'#ecfdf5';
+  var cfCol=monthCF>=0?'#059669':'#e11d48';
+  var matDate=gs('f-maturity');
+  var matDays=matDate?daysUntil(matDate):0;
+  var matYrs=(matDays/365).toFixed(1);
+  var progPct=Math.max(0,Math.min(100,100-(matDays/10950)*100));
+
+  $('dash-hdr').innerHTML=
+    '<div class="dash-hdr">'+
+      '<div>'+
+        '<h1>'+addr+'</h1>'+
+        '<div class="sub">שנת בנייה: '+yBuilt+' · Entry Fee: '+fmtK(entry)+' · PITI: $'+fmt(piti)+'/mo · שכירות: '+rentLabel+' ('+fmtMo(proj.baseRent)+')</div>'+
+        (matDate?'<div class="maturity-bar"><span class="mat-label">פירעון:</span><span class="mat-val">'+matDate+' · '+matYrs+' שנים</span><div class="mat-prog"><div class="mat-prog-inner" style="width:'+progPct+'%"></div></div></div>':'')+
+      '</div>'+
+      '<div class="hdr-kpis">'+
+        '<div class="hdr-kpi"><div class="kv" style="color:'+cfCol+';">'+(monthCF>=0?'+':'')+'$'+fmt(monthCF)+'</div><div class="kl">Cash Flow / Mo</div></div>'+
+        '<div class="hdr-divider"></div>'+
+        '<div class="hdr-kpi"><div class="kv" style="color:#2563eb;">'+fmtK(gn('f-market')-gn('f-purchase'))+'</div><div class="kl">Instant Equity</div></div>'+
+        '<div class="hdr-divider"></div>'+
+        '<div class="hdr-kpi"><span class="badge" style="background:'+ltvBg+';color:'+ltvCol+';">LTV '+ltvPct+'%</span><div class="kl" style="margin-top:4px;">LTV</div></div>'+
+      '</div>'+
+    '</div>';
+
+  /* METRICS */
+  var annRoePct=r1?(((annCF+annPrin+r1.appGain)/(entry||1))*100).toFixed(1):0;
+  var instantEq=gn('f-market')-gn('f-purchase');  /* Instant Equity = שווי שוק פחות מחיר רכישה */
+  $('metrics').innerHTML=
+    mc('#ecfdf5','#059669','📈','ROE שנתי',annRoePct+'%','₪'+fmt(Math.round(annRoePct*entry*ils/100)))+
+    mc('#eff6ff','#2563eb','💰','תזרים נטו',(monthCF>=0?'+':'')+'$'+fmt(monthCF),rentLabel+' | +'+gn('f-rent-growth')+'%/שנה')+
+    mc('#f0f9ff','#0369a1','🏠','Instant Equity',fmtK(instantEq),instantEq>0?'רכישה מתחת לשוק ✓':'אין דיסקאונט')+
+    mc('#f5f3ff','#7c3aed','🔒','שחיקת קרן שנה 1',fmtK(annPrin),'הון נצבר שקט (שפיצר)');
+
+  function mc(bg,col,ico,lbl,val,sub){
+    return '<div class="metric-card"><div class="mc-top"><div class="mc-icon" style="background:'+bg+';font-size:14px;">'+ico+'</div><span class="mc-label">'+lbl+'</span></div><div class="mc-val" style="color:'+col+';">'+val+'</div><div class="mc-sub">'+sub+'</div></div>';
+  }
+
+  /* YEAR CARDS — redesigned grid layout */
+  var yc=['#2563eb','#059669','#7c3aed'],ycb=['#eff6ff','#ecfdf5','#f5f3ff'];
+  var yhtml='';
+  [5,10,15].forEach(function(yr,ci){
+    var d=rows[yr];if(!d)return;
+    var roeY=(((d.annCF+d.annPrin+d.appGain)/(entry||1))*100).toFixed(1);
+    var origLoan=gn('f-loan-bal');
+    yhtml+=
+      '<div class="year-card">'+
+        '<div class="yc-head">'+
+          '<span class="yc-year" style="color:'+yc[ci]+';">שנה '+yr+'</span>'+
+          '<span class="yc-roe" style="background:'+ycb[ci]+';color:'+yc[ci]+';">ROE '+roeY+'%</span>'+
+        '</div>'+
+        '<div class="yc-metrics">'+
+          yci('Equity','#059669',fmtK(d.equity),fmtILS(d.equity,ils))+
+          yci('יתרת חוב','#475569',fmtK(d.balance),'')+
+          yci('קרן שנחזרה','#2563eb',fmtK(origLoan-d.balance),'')+
+          yci('שכירות חודשית','#059669','$'+fmt(d.curRent),rentLabel)+
+          yci('תזרים מצטבר',d.cumCF>=0?'#059669':'#e11d48',(d.cumCF>=0?'+':'')+fmtK(d.cumCF),fmtILS(d.cumCF,ils))+
+          yci('Cash Flow / Mo',d.monthCF>=0?'#059669':'#e11d48','$'+fmt(d.monthCF),'')+
+        '</div>'+
+      '</div>';
+  });
+  $('year-cards').innerHTML=yhtml;
+
+  function yci(lbl,col,val,sub){
+    return '<div class="yc-item"><div class="yc-item-lbl">'+lbl+'</div><div class="yc-item-val" style="color:'+col+';">'+val+'</div>'+(sub?'<div class="yc-item-sub">'+sub+'</div>':'')+' </div>';
+  }
+
+  /* ROE CARD */
+  var roeTotal=annCF+annPrin+(r1?r1.appGain:0);
+  var roePct=entry>0?((roeTotal/entry)*100).toFixed(1):0;
+  $('roe-card').innerHTML=
+    '<div class="roe-head">'+
+      '<div><div class="roe-title">ROE Analyzer — שנה 1 · שפיצר · '+rentLabel+'</div><div class="roe-sub">תשואה משולבת: תזרים + שחיקת קרן (שפיצר) + עליית ערך</div></div>'+
+      '<div style="text-align:center;"><div class="roe-big">'+roePct+'%</div><div class="roe-ils">'+fmtILS(roeTotal,ils)+' / שנה</div></div>'+
+    '</div>'+
+    '<div class="roe-grid">'+
+      ri('תזרים שנתי','#059669',annCF,entry,ils)+
+      ri('שחיקת קרן (שפיצר)','#2563eb',annPrin,entry,ils)+
+      ri('עליית ערך','#7c3aed',r1?r1.appGain:0,entry,ils)+
+    '</div>'+
+    '<div class="roe-formula">ROE = (CF + Principal + Appreciation) ÷ Entry Fee<br>     = ('+fmtK(annCF)+' + '+fmtK(annPrin)+' + '+fmtK(r1?r1.appGain:0)+') ÷ '+fmtK(entry)+' = <strong>'+roePct+'%</strong></div>';
+
+  function ri(lbl,col,val,ef,ils2){
+    var pct=ef>0?((val/ef)*100).toFixed(1):0;
+    return '<div class="roe-item"><div class="ri-lbl">'+lbl+'</div><div class="ri-val" style="color:'+col+';">'+fmtK(val)+'</div><div class="ri-pct">'+fmtILS(val,ils2)+' · '+pct+'% ROE</div></div>';
+  }
+
+  /* ── DUAL CHART PANEL (CF + ROE) ── */
+  var cfGrowthLabel=gn('f-rent-growth')>0?'+'+gn('f-rent-growth')+'%/שנה':'0%';
+  var cfY15=rows[15]?rows[15].monthCF:0, cfY1=rows[1]?rows[1].monthCF:0;
+  var roeY15=rows[15]?rows[15].roe:0, roeY1=rows[1]?rows[1].roe:0;
+  var cfCol15=cfY15>=0?'#059669':'#e11d48';
+  var roeCol15=roeY15>=20?'#059669':roeY15>=10?'#d97706':'#e11d48';
+
+  $('dcp-panel').innerHTML=
+    '<div class="dcp-header">'+
+      '<div class="dcp-title">השפעת עליית שכירות '+cfGrowthLabel+' על תזרים ו-ROE לאורך 15 שנה</div>'+
+      '<span class="dcp-badge" style="background:var(--green-lt);color:var(--green);">עליית שכירות: '+cfGrowthLabel+'</span>'+
+    '</div>'+
+    '<div class="dcp-stats">'+
+      dcpStat('תזרים שנה 1','$'+fmt(cfY1),cfY1>=0?'#059669':'#e11d48')+
+      dcpStat('תזרים שנה 15','$'+fmt(cfY15),cfCol15)+
+      dcpStat('ROE שנה 1',roeY1.toFixed(1)+'%',roeY1>=15?'#059669':roeY1>=8?'#d97706':'#e11d48')+
+      dcpStat('ROE שנה 15',roeY15.toFixed(1)+'%',roeCol15)+
+    '</div>'+
+    '<div class="dcp-body">'+
+      '<div class="dcp-charts">'+
+        '<div>'+
+          '<div style="font-size:10px;font-weight:700;color:var(--text3);text-align:center;margin-bottom:8px;letter-spacing:.08em;text-transform:uppercase;">💸 תזרים חודשי ($)</div>'+
+          '<div class="chart-wrap" id="wrap-cf"><canvas id="chart-cf" height="190"></canvas><div class="crosshair" id="cross-cf"></div></div>'+
+        '</div>'+
+        '<div>'+
+          '<div style="font-size:10px;font-weight:700;color:var(--text3);text-align:center;margin-bottom:8px;letter-spacing:.08em;text-transform:uppercase;">📊 ROE שנתי (%)</div>'+
+          '<div class="chart-wrap" id="wrap-roe-chart"><canvas id="chart-roe-line" height="190"></canvas><div class="crosshair" id="cross-roe"></div></div>'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+
+  function dcpStat(lbl,val,col){
+    return '<div class="dcp-stat"><div class="dcp-stat-lbl">'+lbl+'</div><div class="dcp-stat-val" style="color:'+col+';">'+val+'</div></div>';
+  }
+
+  /* ── CHARTS ── */
+  setTimeout(function(){
+    /* 1. Area: value vs balance (correct equity) */
+    drawLineChart('chart-area','wrap-area','cross-area',rows,
+      [{key:'value',  label:'שווי נכס',  color:'#2563eb'},
+       {key:'balance',label:'יתרת חוב',  color:'#f43f5e'},
+       {key:'equity', label:'Equity (שווי−חוב)',color:'#059669'}]
+    );
+    $('leg-area').innerHTML=
+      '<div class="legend-item"><div class="ldot" style="background:#2563eb"></div>שווי נכס</div>'+
+      '<div class="legend-item"><div class="ldot" style="background:#f43f5e"></div>יתרת חוב</div>'+
+      '<div class="legend-item"><div class="ldot" style="background:#059669"></div>Equity = שווי − חוב</div>';
+
+    /* 2. Sub-To vs S&P — correct baseline: gain above entry fee */
+    var cmpData=rows.map(function(d){
+      /* subto = equity + cumulative CF above entry fee basis
+         at year 0: equity = marketVal − loanBal (instant equity), cumCF=0
+         S&P gain starts at 0 year 0 */
+      return{year:d.year,
+        subto:Math.max(0,d.equity+Math.max(0,d.cumCF)),
+        snpGain:Math.max(0,d.snpGain)};
+    });
+    drawLineChart('chart-compare','wrap-compare','cross-compare',cmpData,
+      [{key:'subto',  label:'Sub-To (Equity+CF)',  color:'#2563eb'},
+       {key:'snpGain',label:'S&P 500 (רווח על '+fmtK(entry)+')',color:'#059669'}]
+    );
+    $('leg-compare').innerHTML=
+      '<div class="legend-item"><div class="ldot" style="background:#2563eb"></div>Sub-To</div>'+
+      '<div class="legend-item"><div class="ldot" style="background:#059669"></div>S&P 500 ('+fmtK(entry)+' מושקעים)</div>';
+
+    /* 3. Monthly CF — use real monthly values, proper scale */
+    drawLineChart('chart-cf','wrap-cf','cross-cf',rows,
+      [{key:'monthCF',label:'תזרים חודשי',color:cfY15>=0?'#059669':'#e11d48',mo:true}],
+      190
+    );
+
+    /* 4. ROE % — real percentage values */
+    var roeLineData=rows.slice(1).map(function(d){return{year:d.year,roe:d.roe};});
+    drawLineChart('chart-roe-line','wrap-roe-chart','cross-roe',roeLineData,
+      [{key:'roe',label:'ROE שנתי %',color:'#7c3aed',pct:true}],
+      190
+    );
+
+    /* 5. Amortization */
+    var amData=proj.shp.map(function(s){return{year:s.year,annualPrin:s.annualPrin,annualInt:s.annualInt,balance:s.balance};});
+    if(amData.length>0)drawAmort('chart-amort','wrap-amort','cross-amort',amData);
+
+  },50);
+
+  /* MICRO CARDS */
+  var mdefs=[
+    {id:'mi-school',icon:'🎓',title:'חינוך',col:'#2563eb'},
+    {id:'mi-crime', icon:'🛡️',title:'בטיחות',col:'#e11d48'},
+    {id:'mi-growth',icon:'📊',title:'דמוגרפיה',col:'#7c3aed'},
+    {id:'mi-jobs',  icon:'💼',title:'תעסוקה',col:'#d97706'},
+  ];
+  $('micro-row').innerHTML=mdefs.map(function(m){
+    return '<div class="micro-card"><div class="micro-icon">'+m.icon+'</div><div class="micro-title" style="color:'+m.col+';">'+m.title+'</div><div class="micro-val" style="color:'+m.col+';">'+(gs(m.id)||'—')+'</div></div>';
+  }).join('');
+
+  /* RISK MATRIX */
+  var rentRatio=piti>0?proj.baseRent/piti:0;
+  var dom=gn('f-dom'),ilsNum=gn('f-ils');
+  var risks=[
+    {s:ltvNum>90?'fail':ltvNum>80?'warn':'pass',i:ltvNum>90?'✗':ltvNum>80?'⚠':'✓',t:'Due-on-Sale Risk',d:'LTV '+ltvNum.toFixed(1)+'% — '+(ltvNum>90?'סיכון גבוה, מומלץ LLC':ltvNum>80?'גבולי, שים לב':'בטוח ✓')},
+    {s:ilsNum<3.2?'fail':ilsNum<3.5?'warn':'pass',i:ilsNum<3.2?'✗':ilsNum<3.5?'⚠':'✓',t:'שחיקת מטבע ILS',d:'שער ₪'+ilsNum+' — '+(ilsNum<3.2?'שחיקה חמורה':ilsNum<3.5?'כדאי לגדר':'סביר ✓')},
+    {s:monthCF<0?'fail':monthCF<100?'warn':'pass',i:monthCF<0?'✗':monthCF<100?'⚠':'✓',t:'תזרים שלילי',d:'$'+fmt(monthCF)+'/mo '+(monthCF<0?'— שלילי!':monthCF<100?'— שולי מאוד':'✓')},
+    {s:rentRatio>=1.1?'pass':rentRatio>=1.0?'warn':'fail',i:rentRatio>=1.1?'✓':rentRatio>=1.0?'⚠':'✗',t:'DSCR (כיסוי PITI)',d:'DSCR '+rentRatio.toFixed(2)+' — '+(rentRatio>=1.1?'מצוין':rentRatio>=1.0?'גבולי':'לא מכסה!')},
+    {s:dom>60?'fail':dom>30?'warn':'pass',i:dom>60?'✗':dom>30?'⚠':'✓',t:'Vacancy Risk',d:dom+' ימים — '+(dom>60?'שוק קשה':dom>30?'מעל ממוצע':'שוק פעיל ✓')},
+    {s:'warn',i:'⚠',t:'ריכוזיות',d:'נכס יחיד — מומלץ פיזור גיאוגרפי'},
+  ];
+  var rhtml='<div class="risk-title">Risk Matrix — Due Diligence אוטומטי</div><div class="risk-grid">';
+  risks.forEach(function(r){rhtml+='<div class="risk-item '+r.s+'"><span class="ri-icon">'+r.i+'</span><div><div class="ri-title">'+r.t+'</div><div class="ri-desc">'+r.d+'</div></div></div>';});
+  $('risk-section').innerHTML=rhtml+'</div>';
+}
+
+render();
+window.addEventListener('resize',function(){setTimeout(render,80);});
+</script>
+</body>
+</html>
